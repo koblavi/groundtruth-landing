@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FAF7F2">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Signing in… — GroundTruth</title>
+
+  <!--
+    OAuth bounce page.
+
+    Google's Web OAuth Client policy rejects custom-scheme redirect
+    URIs ("must use either http or https as the scheme"). So we have
+    Google redirect here, and this page immediately re-redirects to
+    our app's custom scheme. The auth code + state query parameters
+    pass through unchanged.
+
+    On Android: the OS routes dev.groundtruth.mobile://auth/google/...
+    URLs to MainActivity via the IntentFilter.
+    On iOS: ASWebAuthenticationSession's callbackScheme=
+    "dev.groundtruth.mobile" intercepts the redirect.
+
+    Reachable as both /auth/google/callback (Cloudflare Pages strips
+    .html automatically) and /auth/google/callback.html.
+
+    Spec: design-notes/google-signin-spec.md (in koblavi/groundtruth).
+  -->
+
+  <link rel="stylesheet" href="/style.css">
+
+  <script>
+    // Run the bounce as early as possible — before the body renders —
+    // so the user sees the brand mark for <1 sec instead of a "Signing
+    // in..." flash. If the script is blocked (rare on mobile but
+    // defensive), the manual fallback link below still works.
+    (function () {
+      try {
+        var qs = window.location.search || '';
+        var target = 'dev.groundtruth.mobile://auth/google/callback' + qs;
+        // Use replace() so the bounce doesn't add a history entry —
+        // user tapping browser-back from the app shouldn't return
+        // here.
+        window.location.replace(target);
+      } catch (e) {
+        // Leave the manual fallback visible.
+      }
+    })();
+  </script>
+
+  <style>
+    .signing-in {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+      padding: 20px;
+    }
+    .signing-in svg { width: 72px; height: 72px; margin-bottom: 20px; }
+    .signing-in p { color: #6B6256; font-size: 0.95rem; }
+    .fallback {
+      margin-top: 28px;
+      font-size: 0.85rem;
+      color: #6B6256;
+    }
+    .fallback a {
+      color: #D4823A;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="signing-in">
+
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M50,5 L90,28 L90,72 L50,95 L10,72 L10,28 Z" fill="#1F4D3A" />
+        <circle cx="50" cy="50" r="12" fill="#D4823A" />
+      </svg>
+
+      <p>Signing you in to GroundTruth…</p>
+
+      <!--
+        Fallback for the (rare) case where the inline script doesn't
+        fire — e.g. a privacy-mode browser that blocks all JS. The
+        link does the same hand-off but requires a tap.
+      -->
+      <div class="fallback" id="fallback" style="display:none;">
+        <a href="#" id="fallback-link">Tap here to continue</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Show the manual fallback after 2 sec if the page is still here
+    // (meaning the bounce above didn't fire for some reason).
+    setTimeout(function () {
+      var fb = document.getElementById('fallback');
+      var link = document.getElementById('fallback-link');
+      if (fb && link) {
+        link.href = 'dev.groundtruth.mobile://auth/google/callback' + (window.location.search || '');
+        fb.style.display = 'block';
+      }
+    }, 2000);
+  </script>
+</body>
+</html>
