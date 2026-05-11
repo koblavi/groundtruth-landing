@@ -9,3 +9,8 @@ Thumbs.db
 # Cloudflare Pages local preview (if you `wrangler pages dev`)
 .wrangler/
 node_modules/
+
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
