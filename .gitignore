@@ -1,0 +1,11 @@
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Cloudflare Pages local preview (if you `wrangler pages dev`)
+.wrangler/
+node_modules/
