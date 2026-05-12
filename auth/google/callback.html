@@ -16,10 +16,10 @@
     our app's custom scheme. The auth code + state query parameters
     pass through unchanged.
 
-    On Android: the OS routes dev.groundtruth.mobile://auth/google/...
+    On Android: the OS routes com.greyparrot.groundtruth://auth/google/...
     URLs to MainActivity via the IntentFilter.
     On iOS: ASWebAuthenticationSession's callbackScheme=
-    "dev.groundtruth.mobile" intercepts the redirect.
+    "com.greyparrot.groundtruth" intercepts the redirect.
 
     Reachable as both /auth/google/callback (Cloudflare Pages strips
     .html automatically) and /auth/google/callback.html.
@@ -37,7 +37,7 @@
     (function () {
       try {
         var qs = window.location.search || '';
-        var target = 'dev.groundtruth.mobile://auth/google/callback' + qs;
+        var target = 'com.greyparrot.groundtruth://auth/google/callback' + qs;
         // Use replace() so the bounce doesn't add a history entry —
         // user tapping browser-back from the app shouldn't return
         // here.
@@ -100,7 +100,7 @@
       var fb = document.getElementById('fallback');
       var link = document.getElementById('fallback-link');
       if (fb && link) {
-        link.href = 'dev.groundtruth.mobile://auth/google/callback' + (window.location.search || '');
+        link.href = 'com.greyparrot.groundtruth://auth/google/callback' + (window.location.search || '');
         fb.style.display = 'block';
       }
     }, 2000);
